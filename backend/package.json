@@ -1,0 +1,21 @@
+{
+  "name": "fitbit-alarms-backend",
+  "version": "1.0.0",
+  "description": "Backend for FitBit Alarms application",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.1",
+    "axios": "^1.4.0",
+    "node-schedule": "^2.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
