@@ -23,7 +23,7 @@ const FitbitConnect = () => {
         throw new Error('Invalid authorization URL received');
       }
       
-      // Redirect to Fitbit's authorization page
+      // redirect to Fitbit's authorization page
       window.location.href = data.url;
     } catch (error) {
       console.error('Error connecting to Fitbit:', error);
