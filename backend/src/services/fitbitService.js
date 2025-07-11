@@ -9,21 +9,19 @@ class FitbitService {
   }
 
   getAuthorizationUrl(clientId, redirectUri) {
-    if (!clientId) {
-      throw new Error('Missing required parameter: clientId');
+    if (!clientId || !redirectUri) {
+      throw new Error('Missing required parameters: clientId and redirectUri');
     }
 
     // Always request these scopes
     const requiredScopes = ['sleep', 'profile', 'activity'];
     
-    // Ensure the redirect URI is exactly what we expect
-    const finalRedirectUri = 'http://localhost:5001/api/fitbit/callback';
-    console.log('Using redirect_uri:', finalRedirectUri);
+    console.log('Using redirect_uri:', redirectUri);
     
     const params = {
       response_type: 'code',
       client_id: clientId,
-      redirect_uri: finalRedirectUri,  // Use the exact redirect URI
+      redirect_uri: redirectUri,
       scope: requiredScopes.join(' '),
       expires_in: 604800, // 7 days
     };
@@ -74,6 +72,41 @@ class FitbitService {
     } catch (error) {
       console.error('Error getting user profile:', error.response?.data || error.message);
       throw new Error('Failed to get user profile');
+    }
+  }
+
+  async getSleepData(accessToken, date) {
+    try {
+      const response = await axios({
+        method: 'get',
+        url: `${this.baseUrl}/1.2/user/-/sleep/date/${date}.json`,
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Accept': 'application/json',
+          'Accept-Language': 'en_US'
+        },
+        timeout: 10000 // 10 second timeout
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error getting sleep data:', error.response?.data || error.message);
+      throw new Error('Failed to get sleep data');
+    }
+  }
+
+  async getSleepData(accessToken, date) {
+    try {
+      const response = await axios({
+        method: 'get',
+        url: `${this.baseUrl}/1.2/user/-/sleep/date/${date}.json`,
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error getting sleep data:', error.response?.data || error.message);
+      throw new Error('Failed to get sleep data');
     }
   }
 }
