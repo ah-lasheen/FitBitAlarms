@@ -10,6 +10,13 @@ This project aims to create a system that:
 - Integrates with alexa smart devices
 - Provides a web interface for configuration and monitoring
 
+## Relevant Links:
+- [Sample FitBit JSON Data](https://support.mydatahelps.org/hc/en-us/articles/360049602813-Fitbit-Sleep-Log-Data-Export-Format)
+- [Authorization OAuth 2.0 Docs](https://dev.fitbit.com/build/reference/web-api/developer-guide/authorization/)
+- [Fitbit OAuth 2.0 Tutorial](https://dev.fitbit.com/build/reference/web-api/troubleshooting-guide/oauth2-tutorial/?clientEncodedId=23QGJ2&redirectUri=http://localhost:5001/api/fitbit/callback&applicationType=PERSONAL)
+- [Sleep Logs By Date Elements](https://dev.fitbit.com/build/reference/web-api/sleep/get-sleep-log-by-date/#Response)
+- [Other Sleep Endpoints & Elements](https://dev.fitbit.com/build/reference/web-api/sleep/)
+
 ## Tech Stack (Subject to updates)
 - Backend: Node.js/Express
 - Frontend: React
