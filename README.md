@@ -1,13 +1,12 @@
 # FitBit Alarms
 
-A smart alarm system that uses Fitbit sleep data to optimize wake-up times and integrates with smart devices for alarms.
+A smart alarm system that uses Fitbit sleep data to optimize wake-up times based on calculated circadian cycles.
 
 ## Project Overview
 
 This project aims to create a system that:
-- Tracks user sleep patterns using Fitbit
 - Analyzes sleep data to determine optimal wake-up times
-- Integrates with alexa smart devices
+- Integrates with your fitbit device devices
 - Provides a web interface for configuration and monitoring
 
 ## Relevant Links:
@@ -16,13 +15,6 @@ This project aims to create a system that:
 - [Fitbit OAuth 2.0 Tutorial](https://dev.fitbit.com/build/reference/web-api/troubleshooting-guide/oauth2-tutorial/?clientEncodedId=23QGJ2&redirectUri=http://localhost:5001/api/fitbit/callback&applicationType=PERSONAL)
 - [Sleep Logs By Date Elements](https://dev.fitbit.com/build/reference/web-api/sleep/get-sleep-log-by-date/#Response)
 - [Other Sleep Endpoints & Elements](https://dev.fitbit.com/build/reference/web-api/sleep/)
-
-## Tech Stack (Subject to updates)
-- Backend: Node.js/Express
-- Frontend: React
-- Database: MongoDB
-- Authentication: JWT
-- Device Integration: Alexa Skills Kit
 
 ## Setup Instructions
 
