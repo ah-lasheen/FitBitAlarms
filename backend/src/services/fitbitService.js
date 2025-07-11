@@ -8,16 +8,23 @@ class FitbitService {
     this.tokenUrl = 'https://api.fitbit.com/oauth2/token';
   }
 
-  getAuthorizationUrl(clientId, redirectUri, scopes = ['sleep', 'profile']) {
-    if (!clientId || !redirectUri) {
-      throw new Error('Missing required parameters');
+  getAuthorizationUrl(clientId, redirectUri) {
+    if (!clientId) {
+      throw new Error('Missing required parameter: clientId');
     }
 
+    // Always request these scopes
+    const requiredScopes = ['sleep', 'profile', 'activity'];
+    
+    // Ensure the redirect URI is exactly what we expect
+    const finalRedirectUri = 'http://localhost:5001/api/fitbit/callback';
+    console.log('Using redirect_uri:', finalRedirectUri);
+    
     const params = {
       response_type: 'code',
       client_id: clientId,
-      redirect_uri: redirectUri,
-      scope: scopes.join(' '),
+      redirect_uri: finalRedirectUri,  // Use the exact redirect URI
+      scope: requiredScopes.join(' '),
       expires_in: 604800, // 7 days
     };
 
