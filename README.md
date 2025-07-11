@@ -28,3 +28,13 @@ This project aims to create a system that:
 1. Navigate to frontend directory
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
+
+### API TESTING (ignore)
+Get authorization URL:
+curl http://localhost:5001/api/fitbit/auth-url
+
+Get sleep data (after authorization):
+curl http://localhost:5001/api/fitbit/sleep
+
+Get sleep data for specific date:
+curl "http://localhost:5001/api/fitbit/sleep?date=2025-02-11"
