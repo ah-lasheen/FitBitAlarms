@@ -1,0 +1,306 @@
+/* Main container */
+.loginContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e0e9f5 100%);
+  padding: 20px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Loading container */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+/* Card styling */
+.loginCard {
+  width: 100%;
+  max-width: 460px;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  padding: 40px 32px;
+  background: white;
+  position: relative;
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.loginCard:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Logo and title */
+.logoContainer {
+  margin-bottom: 32px;
+  padding: 0 10px;
+}
+
+.appLogo {
+  height: 64px;
+  width: auto;
+  margin-bottom: 16px;
+  transition: transform 0.3s ease;
+}
+
+.logoContainer:hover .appLogo {
+  transform: scale(1.05);
+}
+
+.title {
+  color: #1a365d;
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #718096;
+  font-size: 16px;
+  margin-top: 8px;
+  display: block;
+}
+
+/* Button container */
+.loginButtonContainer {
+  position: relative;
+  margin: 32px 0 16px;
+}
+
+/* Fitbit button */
+.fitbitButton {
+  background-color: #00b0b9;
+  border: none;
+  height: 52px;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 176, 185, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.fitbitButton:hover {
+  background-color: #008c94;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 176, 185, 0.3);
+}
+
+.fitbitButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 176, 185, 0.3);
+}
+
+.fitbitButton:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.fitbitLogo {
+  height: 26px;
+  width: auto;
+  margin-right: 12px;
+  transition: transform 0.3s ease;
+}
+
+.fitbitButton:hover .fitbitLogo {
+  transform: scale(1.1);
+}
+
+/* Divider */
+.divider {
+  margin: 24px 0;
+  color: #a0aec0;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* Alert and messages */
+.alert {
+  margin-bottom: 24px;
+  text-align: left;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.errorHelp {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Info alert */
+.infoAlert {
+  margin: 24px 0;
+  text-align: left;
+  background-color: #ebf8ff;
+  border: 1px solid #bee3f8;
+  border-radius: 8px;
+}
+
+/* Privacy info */
+.privacyInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 8px;
+  color: #718096;
+  font-size: 13px;
+}
+
+.privacyText {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* Sign up link */
+.signupLink {
+  margin-left: 4px;
+  font-weight: 600;
+  color: #3182ce;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+
+.signupLink:hover {
+  color: #2c5282;
+  text-decoration: underline;
+}
+
+/* Footer */
+.footer {
+  margin-top: 40px;
+  text-align: center;
+  color: #a0aec0;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footerLinks {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.footerLinks a {
+  color: #718096;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footerLinks a:hover {
+  color: #4a5568;
+  text-decoration: underline;
+}
+
+/* Loading overlay */
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 16px;
+  backdrop-filter: blur(4px);
+}
+
+.loadingOverlay p {
+  margin-top: 16px;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .loginCard {
+    padding: 32px 20px;
+    margin: 0 12px;
+    border-radius: 12px;
+  }
+  
+  .fitbitButton {
+    height: 50px;
+    font-size: 15px;
+  }
+  
+  .fitbitLogo {
+    height: 24px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .subtitle {
+    font-size: 15px;
+  }
+  
+  .footer {
+    margin-top: 30px;
+  }
+  
+  .footerLinks {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+/* Animation for the login card */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loginCard {
+  animation: fadeInUp 0.6s ease-out forwards;
+}

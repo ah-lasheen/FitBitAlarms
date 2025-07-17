@@ -11,21 +11,74 @@ const PORT = 5001;
 
 // Add basic middleware
 app.use(express.json());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-}));
+
+// Configure CORS with specific options
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL || 'http://localhost:3000',
+      'http://localhost:3000',
+      'http://127.0.0.1:3000'
+    ];
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Set-Cookie'],
+  maxAge: 86400 // 24 hours
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 const session = require('express-session');
-app.use(session({
+
+// Configure session middleware
+const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'dev_secret_key',
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // set to true if using HTTPS
-}));
+  saveUninitialized: false, // Don't create session until something is stored
+  cookie: { 
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS in production
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  },
+  name: 'fitbit_alarms.sid', // Custom session cookie name
+  rolling: true // Reset the maxAge on every request
+};
 
-// Add this after the session middleware
+// In production, you might want to use a session store like Redis
+// Example with Redis (uncomment and configure as needed):
+// const RedisStore = require('connect-redis')(session);
+// sessionConfig.store = new RedisStore({
+//   host: 'localhost',
+//   port: 6379,
+//   client: redisClient,
+//   ttl: 86400 // 24 hours
+// });
+
+app.use(session(sessionConfig));
+
+// Import routes
+const authRoutes = require('./routes/auth');
 const fitbitRoutes = require('./routes/fitbit');
+
+// API routes
+app.use('/api/auth', authRoutes);
 app.use('/api/fitbit', fitbitRoutes);
 
 // Health check endpoint
@@ -38,7 +91,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // Environment variable checks
-const requiredEnvVars = ['FITBIT_CLIENT_ID', 'FITBIT_CLIENT_SECRET'];
+const requiredEnvVars = [
+  'FITBIT_CLIENT_ID',
+  'FITBIT_CLIENT_SECRET',
+  'FITBIT_REDIRECT_URI',
+  'FRONTEND_URL',
+  'SESSION_SECRET'
+];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingVars.length > 0) {

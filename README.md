@@ -1,20 +1,29 @@
-# FitBit Alarms
+# FitBit Dashboard
 
-A smart alarm system that uses Fitbit sleep data to optimize wake-up times based on calculated circadian cycles.
+A comprehensive fitness dashboard that displays key metrics from your Fitbit device including steps, distance, calories, active minutes, heart rate, and sleep data.
 
 ## Project Overview
 
-This project aims to create a system that:
-- Analyzes sleep data to determine optimal wake-up times
-- Integrates with your fitbit device devices
-- Provides a web interface for configuration and monitoring
+This project provides a clean web interface to:
+- Connect with your Fitbit account via OAuth
+- View your fitness metrics in real-time
+- Filter data by different time periods (Today/Week/Month/Year)
+- Monitor your health and activity data
+
+## Features
+
+- **OAuth Authentication** with Fitbit
+- **Real-time Data** from Fitbit API
+- **Multiple Metrics**: Steps, Distance, Calories, Active Minutes, Heart Rate, Sleep
+- **Time-based Filtering** for data visualization
+- **Clean Dashboard Interface**
 
 ## Relevant Links:
-- [Sample FitBit JSON Data](https://support.mydatahelps.org/hc/en-us/articles/360049602813-Fitbit-Sleep-Log-Data-Export-Format)
-- [Authorization OAuth 2.0 Docs](https://dev.fitbit.com/build/reference/web-api/developer-guide/authorization/)
+- [Fitbit OAuth 2.0 Documentation](https://dev.fitbit.com/build/reference/web-api/developer-guide/authorization/)
 - [Fitbit OAuth 2.0 Tutorial](https://dev.fitbit.com/build/reference/web-api/troubleshooting-guide/oauth2-tutorial/?clientEncodedId=23QGJ2&redirectUri=http://localhost:5001/api/fitbit/callback&applicationType=PERSONAL)
-- [Sleep Logs By Date Elements](https://dev.fitbit.com/build/reference/web-api/sleep/get-sleep-log-by-date/#Response)
-- [Other Sleep Endpoints & Elements](https://dev.fitbit.com/build/reference/web-api/sleep/)
+- [Activity Endpoints](https://dev.fitbit.com/build/reference/web-api/activity/)
+- [Heart Rate Endpoints](https://dev.fitbit.com/build/reference/web-api/heart-rate/)
+- [Sleep Endpoints](https://dev.fitbit.com/build/reference/web-api/sleep/)
 
 ## Setup Instructions
 
@@ -29,12 +38,18 @@ This project aims to create a system that:
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
 
-### API TESTING (ignore)
+### API Testing
 Get authorization URL:
+```bash
 curl http://localhost:5001/api/fitbit/auth-url
+```
 
 Get sleep data (after authorization):
+```bash
 curl http://localhost:5001/api/fitbit/sleep
+```
 
 Get sleep data for specific date:
+```bash
 curl "http://localhost:5001/api/fitbit/sleep?date=2025-02-11"
+```

@@ -38,10 +38,8 @@ router.get('/auth-url', (req, res) => {
       throw new Error('FITBIT_CLIENT_ID is not set in environment variables');
     }
 
-    // Construct the redirect URI that matches exactly what's registered in Fitbit app settings
-    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
-    const host = req.get('host');
-    const redirectUri = `${protocol}://${host}/api/fitbit/callback`;
+    // Use the redirect URI from environment variables to ensure consistency
+    const redirectUri = process.env.FITBIT_REDIRECT_URI;
     
     console.log('Generating auth URL with:', {
       clientId: process.env.FITBIT_CLIENT_ID ? '***' : 'MISSING',
