@@ -5,6 +5,32 @@ const { saveSleepData, getLatestSleepData } = require('../utils/fileUtils');
 const fs = require('fs');
 const path = require('path');
 
+// Debug route to view tokens (temporary)
+router.get('/debug/tokens', (req, res) => {
+  if (!req.session.fitbitAccessToken) {
+    return res.status(401).json({ 
+      status: 'error',
+      message: 'No active Fitbit session. Please authenticate first by visiting /api/fitbit/auth-url'
+    });
+  }
+  
+  // Calculate token expiration time
+  const expiresIn = req.session.tokenExpiresIn || 0;
+  const tokenExpiry = new Date(Date.now() + (expiresIn * 1000));
+  
+  res.json({
+    status: 'success',
+    hasAccessToken: !!req.session.fitbitAccessToken,
+    accessToken: req.session.fitbitAccessToken,
+    hasRefreshToken: !!req.session.fitbitRefreshToken,
+    refreshToken: req.session.fitbitRefreshToken,
+    tokenType: req.session.tokenType || 'Bearer',
+    expiresIn: expiresIn,
+    expiresAt: tokenExpiry.toISOString(),
+    scopes: req.session.scopes || []
+  });
+});
+
 // Get authorization URL
 router.get('/auth-url', (req, res) => {
   try {
