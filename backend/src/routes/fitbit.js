@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const fitbitService = require('../services/fitbitService');
-const { saveSleepData, getLatestSleepData } = require('../utils/fileUtils');
-const fs = require('fs');
-const path = require('path');
 
 // Debug route to view tokens (temporary)
 router.get('/debug/tokens', (req, res) => {
@@ -168,15 +165,6 @@ router.get('/sleep', async (req, res) => {
       ...sleepData
     };
     
-    // Save to latest_sleep_data.json using fileUtils
-    try {
-      await saveSleepData(formattedData);
-      console.log(`Latest sleep data updated for ${dateParam}`);
-    } catch (fileError) {
-      console.error('Error saving sleep data to file:', fileError);
-      // Continue even if file save fails
-    }
-    
     res.json(formattedData);
     
   } catch (error) {
@@ -206,24 +194,196 @@ router.get('/sleep', async (req, res) => {
   }
 });
 
-// Route to read the latest sleep data
-router.get('/sleep/latest', async (req, res) => {
-  try {
-    const sleepData = await getLatestSleepData();
-    if (!sleepData) {
-      return res.status(404).json({ 
-        status: 'error',
-        error: 'No sleep data found',
-        message: 'No sleep data has been fetched yet.' 
-      });
-    }
-    res.json(sleepData);
-  } catch (err) {
-    console.error('Error getting latest sleep data:', err);
-    res.status(500).json({ 
+// Route to get activity data (steps, distance, calories, active minutes)
+router.get('/activity', async (req, res) => {
+  const accessToken = req.session.fitbitAccessToken;
+  if (!accessToken) {
+    return res.status(401).json({ 
       status: 'error',
-      error: 'Failed to read sleep data',
-      details: err.message 
+      error: 'Not authenticated',
+      message: 'Please authorize with Fitbit first' 
+    });
+  }
+  
+  // Get date from query parameter or use today's date
+  const dateParam = req.query.date || new Date().toISOString().split('T')[0];
+  
+  // Validate date format (YYYY-MM-DD)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+    return res.status(400).json({ 
+      status: 'error',
+      error: 'Invalid date format',
+      message: 'Please use YYYY-MM-DD format' 
+    });
+  }
+  
+  try {
+    console.log(`Fetching activity data for date: ${dateParam}`);
+    
+    // Fetch activity data using the service
+    const activityData = await fitbitService.getActivityData(accessToken, dateParam);
+    
+    // Format the response
+    const formattedData = {
+      status: 'success',
+      fetchTime: new Date().toISOString(),
+      requestedDate: dateParam,
+      ...activityData
+    };
+    
+    res.json(formattedData);
+    
+  } catch (error) {
+    const errorInfo = {
+      timestamp: new Date().toISOString(),
+      error: error.message,
+      date: dateParam
+    };
+    
+    // Add rate limit info if available
+    if (error.response?.status === 429) {
+      errorInfo.rateLimit = {
+        retryAfter: error.response.headers['retry-after'] || '60',
+        limit: error.response.headers['fitbit-rate-limit-limit'],
+        remaining: error.response.headers['fitbit-rate-limit-remaining'],
+        reset: error.response.headers['fitbit-rate-limit-reset']
+      };
+    }
+    
+    console.error('Error in /activity:', errorInfo);
+    
+    const statusCode = error.response?.status || 500;
+    res.status(statusCode).json({
+      status: 'error',
+      ...errorInfo
+    });
+  }
+});
+
+// Route to get heart rate data
+router.get('/heart-rate', async (req, res) => {
+  const accessToken = req.session.fitbitAccessToken;
+  if (!accessToken) {
+    return res.status(401).json({ 
+      status: 'error',
+      error: 'Not authenticated',
+      message: 'Please authorize with Fitbit first' 
+    });
+  }
+  
+  // Get date from query parameter or use today's date
+  const dateParam = req.query.date || new Date().toISOString().split('T')[0];
+  
+  // Validate date format (YYYY-MM-DD)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+    return res.status(400).json({ 
+      status: 'error',
+      error: 'Invalid date format',
+      message: 'Please use YYYY-MM-DD format' 
+    });
+  }
+  
+  try {
+    console.log(`Fetching heart rate data for date: ${dateParam}`);
+    
+    // Fetch heart rate data using the service
+    const heartRateData = await fitbitService.getHeartRateData(accessToken, dateParam);
+    
+    // Format the response
+    const formattedData = {
+      status: 'success',
+      fetchTime: new Date().toISOString(),
+      requestedDate: dateParam,
+      ...heartRateData
+    };
+    
+    res.json(formattedData);
+    
+  } catch (error) {
+    const errorInfo = {
+      timestamp: new Date().toISOString(),
+      error: error.message,
+      date: dateParam
+    };
+    
+    // Add rate limit info if available
+    if (error.response?.status === 429) {
+      errorInfo.rateLimit = {
+        retryAfter: error.response.headers['retry-after'] || '60',
+        limit: error.response.headers['fitbit-rate-limit-limit'],
+        remaining: error.response.headers['fitbit-rate-limit-remaining'],
+        reset: error.response.headers['fitbit-rate-limit-reset']
+      };
+    }
+    
+    console.error('Error in /heart-rate:', errorInfo);
+    
+    const statusCode = error.response?.status || 500;
+    res.status(statusCode).json({
+      status: 'error',
+      ...errorInfo
+    });
+  }
+});
+
+// Route to get all metrics for a specific date
+router.get('/metrics', async (req, res) => {
+  const accessToken = req.session.fitbitAccessToken;
+  if (!accessToken) {
+    return res.status(401).json({ 
+      status: 'error',
+      error: 'Not authenticated',
+      message: 'Please authorize with Fitbit first' 
+    });
+  }
+  
+  // Get date from query parameter or use today's date
+  const dateParam = req.query.date || new Date().toISOString().split('T')[0];
+  
+  // Validate date format (YYYY-MM-DD)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+    return res.status(400).json({ 
+      status: 'error',
+      error: 'Invalid date format',
+      message: 'Please use YYYY-MM-DD format' 
+    });
+  }
+  
+  try {
+    console.log(`Fetching all metrics for date: ${dateParam}`);
+    
+    // Fetch all metrics in parallel
+    const [sleepData, activityData, heartRateData] = await Promise.allSettled([
+      fitbitService.getSleepData(accessToken, dateParam),
+      fitbitService.getActivityData(accessToken, dateParam),
+      fitbitService.getHeartRateData(accessToken, dateParam)
+    ]);
+    
+    // Format the response
+    const formattedData = {
+      status: 'success',
+      fetchTime: new Date().toISOString(),
+      requestedDate: dateParam,
+      sleep: sleepData.status === 'fulfilled' ? sleepData.value : { error: sleepData.reason?.message || 'Failed to fetch sleep data' },
+      activity: activityData.status === 'fulfilled' ? activityData.value : { error: activityData.reason?.message || 'Failed to fetch activity data' },
+      heartRate: heartRateData.status === 'fulfilled' ? heartRateData.value : { error: heartRateData.reason?.message || 'Failed to fetch heart rate data' }
+    };
+    
+    res.json(formattedData);
+    
+  } catch (error) {
+    const errorInfo = {
+      timestamp: new Date().toISOString(),
+      error: error.message,
+      date: dateParam
+    };
+    
+    console.error('Error in /metrics:', errorInfo);
+    
+    const statusCode = error.response?.status || 500;
+    res.status(statusCode).json({
+      status: 'error',
+      ...errorInfo
     });
   }
 });

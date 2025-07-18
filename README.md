@@ -49,7 +49,24 @@ Get sleep data (after authorization):
 curl http://localhost:5001/api/fitbit/sleep
 ```
 
-Get sleep data for specific date:
+Get activity data (steps, distance, calories, active minutes):
+```bash
+curl http://localhost:5001/api/fitbit/activity
+```
+
+Get heart rate data:
+```bash
+curl http://localhost:5001/api/fitbit/heart-rate
+```
+
+Get all metrics for a specific date:
+```bash
+curl "http://localhost:5001/api/fitbit/metrics?date=2025-02-11"
+```
+
+Get specific data for a date:
 ```bash
 curl "http://localhost:5001/api/fitbit/sleep?date=2025-02-11"
+curl "http://localhost:5001/api/fitbit/activity?date=2025-02-11"
+curl "http://localhost:5001/api/fitbit/heart-rate?date=2025-02-11"
 ```
