@@ -131,7 +131,7 @@ router.get('/callback', async (req, res) => {
         req.session.save((err) => {
           if (err) {
             console.error('Error saving session:', err);
-            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3002';
             res.redirect(`${frontendUrl}?auth=error&message=session_error`);
             return;
           }
@@ -147,7 +147,7 @@ router.get('/callback', async (req, res) => {
           });
           
           // Redirect back to the frontend with success message
-          const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+          const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3002';
           res.redirect(`${frontendUrl}?auth=success`);
         });
       } else {
@@ -155,7 +155,7 @@ router.get('/callback', async (req, res) => {
       }
     } catch (profileError) {
       console.error('Error fetching user profile:', profileError);
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3002';
       res.redirect(`${frontendUrl}?auth=error&message=profile_error`);
     }
   } catch (error) {
@@ -168,7 +168,7 @@ router.get('/callback', async (req, res) => {
       console.error('Error response headers:', error.response.headers);
     }
     
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3002';
     res.redirect(`${frontendUrl}?auth=error&message=${encodeURIComponent(error.message)}`);
   }
 });
