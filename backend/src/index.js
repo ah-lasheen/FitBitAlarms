@@ -16,9 +16,11 @@ app.use(express.json());
 const corsOptions = {
   origin: (origin, callback) => {
     const allowedOrigins = [
-      process.env.FRONTEND_URL || 'http://localhost:3000',
+      process.env.FRONTEND_URL || 'http://localhost:3001',
       'http://localhost:3000',
-      'http://127.0.0.1:3000'
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001'
     ];
     
     // Allow requests with no origin (like mobile apps or curl requests)

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Card, Typography, Alert, Spin, Row, Col, Divider } from 'antd';
+import { Button, Card, Typography, Alert, Spin, Divider, message } from 'antd';
 import { authService } from '../../services/auth';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { LockOutlined, InfoCircleOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import styles from './styles.module.css';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -52,6 +52,7 @@ const Login = () => {
 
   const handleLogin = useCallback(async () => {
     try {
+      console.log('Login button clicked');
       setLoading(true);
       setError('');
       
@@ -61,23 +62,12 @@ const Login = () => {
         sessionStorage.setItem('redirectAfterLogin', redirectUrl);
       }
       
-      // Clear any existing auth state
-      await authService.logout();
+      console.log('About to call authService.login()...');
       
-      // Show a loading message that won't be cleared automatically
-      const hideLoading = message.loading({
-        content: 'Redirecting to Fitbit...',
-        key: 'login-loading',
-        duration: 0
-      });
+      // Initiate the login flow directly
+      await authService.login();
       
-      try {
-        // Initiate the login flow
-        await authService.login();
-      } catch (err) {
-        hideLoading();
-        throw err;
-      }
+      console.log('Login flow completed');
       
     } catch (err) {
       console.error('Login error:', err);

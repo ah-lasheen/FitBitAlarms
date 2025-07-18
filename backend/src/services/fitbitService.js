@@ -132,6 +132,25 @@ class FitbitService {
     }
   }
 
+  async getHeartRateIntradayData(accessToken, date) {
+    try {
+      const response = await axios({
+        method: 'get',
+        url: `${this.baseUrl}/1/user/-/activities/heart/date/${date}/1d/1min.json`,
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Accept': 'application/json',
+          'Accept-Language': 'en_US'
+        },
+        timeout: 10000 // 10 second timeout
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error getting heart rate intraday data:', error.response?.data || error.message);
+      throw new Error('Failed to get heart rate intraday data');
+    }
+  }
+
   async getStepsData(accessToken, date) {
     try {
       const response = await axios({

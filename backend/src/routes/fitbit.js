@@ -110,9 +110,54 @@ router.get('/callback', async (req, res) => {
       req.session.fitbitRefreshToken = tokens.refresh_token;
     }
 
-    // Redirect back to the frontend with success message
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(`${frontendUrl}?auth=success`);
+    // Get user profile to set up the session properly
+    try {
+      console.log('Fetching user profile to set up session...');
+      const profile = await fitbitService.getUserProfile(tokens.access_token);
+      
+      if (profile && profile.user) {
+        console.log(`Setting up session for user: ${profile.user.displayName} (${profile.user.encodedId})`);
+        
+        // Set up the user session (similar to authController)
+        req.session.user = {
+          id: profile.user.encodedId,
+          displayName: profile.user.displayName,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          expiresAt: Date.now() + (tokens.expires_in * 1000)
+        };
+        
+        // Save the session
+        req.session.save((err) => {
+          if (err) {
+            console.error('Error saving session:', err);
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+            res.redirect(`${frontendUrl}?auth=error&message=session_error`);
+            return;
+          }
+          
+          console.log('Session saved successfully');
+          
+          // Set a cookie for the frontend to detect successful auth
+          res.cookie('fitbit_auth', 'success', {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 1000 * 60 * 60 * 24 // 1 day
+          });
+          
+          // Redirect back to the frontend with success message
+          const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+          res.redirect(`${frontendUrl}?auth=success`);
+        });
+      } else {
+        throw new Error('Failed to fetch user profile');
+      }
+    } catch (profileError) {
+      console.error('Error fetching user profile:', profileError);
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      res.redirect(`${frontendUrl}?auth=error&message=profile_error`);
+    }
   } catch (error) {
     console.error('Error in OAuth callback:', error);
     
@@ -353,11 +398,18 @@ router.get('/metrics', async (req, res) => {
     console.log(`Fetching all metrics for date: ${dateParam}`);
     
     // Fetch all metrics in parallel
-    const [sleepData, activityData, heartRateData] = await Promise.allSettled([
+    const [sleepData, activityData, heartRateData, heartRateIntradayData] = await Promise.allSettled([
       fitbitService.getSleepData(accessToken, dateParam),
       fitbitService.getActivityData(accessToken, dateParam),
-      fitbitService.getHeartRateData(accessToken, dateParam)
+      fitbitService.getHeartRateData(accessToken, dateParam),
+      fitbitService.getHeartRateIntradayData(accessToken, dateParam)
     ]);
+    
+    // Log the raw data for debugging
+    console.log('Sleep data result:', sleepData.status === 'fulfilled' ? 'SUCCESS' : 'FAILED', sleepData.status === 'fulfilled' ? Object.keys(sleepData.value) : sleepData.reason?.message);
+    console.log('Activity data result:', activityData.status === 'fulfilled' ? 'SUCCESS' : 'FAILED', activityData.status === 'fulfilled' ? Object.keys(activityData.value) : activityData.reason?.message);
+    console.log('Heart rate data result:', heartRateData.status === 'fulfilled' ? 'SUCCESS' : 'FAILED', heartRateData.status === 'fulfilled' ? Object.keys(heartRateData.value) : heartRateData.reason?.message);
+    console.log('Heart rate intraday data result:', heartRateIntradayData.status === 'fulfilled' ? 'SUCCESS' : 'FAILED', heartRateIntradayData.status === 'fulfilled' ? Object.keys(heartRateIntradayData.value) : heartRateIntradayData.reason?.message);
     
     // Format the response
     const formattedData = {
@@ -366,9 +418,13 @@ router.get('/metrics', async (req, res) => {
       requestedDate: dateParam,
       sleep: sleepData.status === 'fulfilled' ? sleepData.value : { error: sleepData.reason?.message || 'Failed to fetch sleep data' },
       activity: activityData.status === 'fulfilled' ? activityData.value : { error: activityData.reason?.message || 'Failed to fetch activity data' },
-      heartRate: heartRateData.status === 'fulfilled' ? heartRateData.value : { error: heartRateData.reason?.message || 'Failed to fetch heart rate data' }
+      heartRate: {
+        ...(heartRateData.status === 'fulfilled' ? heartRateData.value : { error: heartRateData.reason?.message || 'Failed to fetch heart rate data' }),
+        ...(heartRateIntradayData.status === 'fulfilled' ? heartRateIntradayData.value : {})
+      }
     };
     
+    console.log('Sending formatted data with keys:', Object.keys(formattedData));
     res.json(formattedData);
     
   } catch (error) {

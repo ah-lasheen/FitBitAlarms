@@ -121,17 +121,24 @@ export const authService = {
   login: async () => {
     try {
       console.log('Initiating Fitbit OAuth flow...');
+      
       // Clear any existing session data
       localStorage.removeItem('authState');
       
+      console.log('Making API call to /fitbit/auth-url...');
+      
       // Get the authorization URL from the backend
-      const response = await api.get('/auth/fitbit/url');
+      const response = await api.get('/fitbit/auth-url');
+      
+      console.log('API response received:', response);
       
       if (!response.data?.url) {
+        console.error('No URL in response:', response.data);
         throw new Error('No authorization URL received from server');
       }
       
-      console.log('Redirecting to Fitbit authorization page...');
+      const authUrl = response.data.url;
+      console.log('Authorization URL:', authUrl);
       
       // Store the current URL to redirect back after successful login
       const redirectAfterLogin = window.location.pathname !== '/login' 
@@ -141,13 +148,22 @@ export const authService = {
       // Store the redirect URL in session storage (not local storage for security)
       sessionStorage.setItem('redirectAfterLogin', redirectAfterLogin);
       
+      console.log('About to redirect to:', authUrl);
+      
       // Redirect to Fitbit authorization page
-      window.location.href = response.data.url;
+      window.location.href = authUrl;
+      
+      console.log('Redirect initiated');
       
       // Return a promise that will only resolve after the redirect
       return new Promise(() => {});
     } catch (error) {
       console.error('Login error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       throw new Error(error.response?.data?.message || 'Failed to initiate login');
     }
   },
@@ -207,6 +223,8 @@ export const authService = {
       console.error('Session error:', error);
       // If there's an error, clear any cached auth state
       localStorage.removeItem('authState');
+      
+      // Return a default response instead of throwing
       return { isAuthenticated: false };
     }
   },
